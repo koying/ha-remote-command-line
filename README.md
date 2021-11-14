@@ -6,6 +6,8 @@ Besides the functionalities of the hereabove, it also:
 - allow to disable polling altogether, relying on `homeassistant.update_entity` to trigger updates od the sensors
 - has an help for remote connections via SSH
 
+Additionally, it implements the functionalities of the `shell_command` service, with the added capability to specify a timeout value.
+
 ## Changelog
 
 ### 0.1
@@ -18,6 +20,8 @@ Besides the functionalities of the hereabove, it also:
 
 1. Launch HACS
 1. Navigate to the Integrations section
+1. Click the 3-dots and "Custom Repositories"
+1. Add a new URL: "https://github.com/koying/ha-remote-command-line.git" with category "Integration"
 1. "+ Explore & Add Repositories" button in the bottom-right
 1. Search for "MQTT DiscoveryStream"
 1. Select "Install this repository"
@@ -44,6 +48,17 @@ Examples:
   polling: false
   command: >
     IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker pull -q ${IMAGE} > /dev/null
+```
+
+Example of service:
+
+```yaml
+remote_command_line:
+  fetch_ha_image:
+    ssh_user: user
+    command_timeout: 900
+    command: >
+        IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker pull -q ${IMAGE}
 ```
 
 ## Configuration

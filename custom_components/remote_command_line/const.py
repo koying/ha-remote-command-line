@@ -2,7 +2,7 @@
 from homeassistant.helpers.config_validation import (  # noqa: F401
     PLATFORM_SCHEMA,
 )
-import voluptuous
+import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 
 CONF_COMMAND_TIMEOUT = "command_timeout"
@@ -15,11 +15,10 @@ CONF_SSH_HOST = "ssh_host"
 CONF_SSH_KEY = "ssh_key"
 CONF_POLLING = "polling"
 
-BASE_SSH_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-        voluptuous.Required(CONF_SSH_USER): cv.string,
-        voluptuous.Optional(CONF_SSH_HOST): cv.string,
-        voluptuous.Optional(CONF_SSH_KEY): cv.string,
-        voluptuous.Optional(CONF_POLLING, default=True): cv.boolean,
+BASE_SSH_SCHEMA = {
+        vol.Required(CONF_SSH_USER): cv.string,
+        vol.Optional(CONF_SSH_HOST): cv.string,
+        vol.Optional(CONF_SSH_KEY): cv.string,
     }
-)
+
+BASE_SSH_PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(BASE_SSH_SCHEMA)

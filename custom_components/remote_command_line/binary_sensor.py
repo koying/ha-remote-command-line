@@ -19,7 +19,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.reload import setup_reload_service
 
 from . import CommandData
-from .const import BASE_SSH_SCHEMA, CONF_COMMAND_TIMEOUT, CONF_POLLING, DEFAULT_TIMEOUT, DOMAIN, PLATFORMS
+from .const import BASE_SSH_PLATFORM_SCHEMA, CONF_COMMAND_TIMEOUT, CONF_POLLING, DEFAULT_TIMEOUT, DOMAIN, PLATFORMS
 
 DEFAULT_NAME = "Binary Command Sensor"
 DEFAULT_PAYLOAD_ON = "ON"
@@ -28,7 +28,7 @@ DEFAULT_PAYLOAD_OFF = "OFF"
 SCAN_INTERVAL = timedelta(seconds=60)
 
 
-PLATFORM_SCHEMA = BASE_SSH_SCHEMA.extend(
+PLATFORM_SCHEMA = BASE_SSH_PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_COMMAND): cv.template,
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
@@ -37,6 +37,7 @@ PLATFORM_SCHEMA = BASE_SSH_SCHEMA.extend(
         vol.Optional(CONF_DEVICE_CLASS): DEVICE_CLASSES_SCHEMA,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
         vol.Optional(CONF_COMMAND_TIMEOUT, default=DEFAULT_TIMEOUT): cv.positive_int,
+        vol.Optional(CONF_POLLING, default=True): cv.boolean,
     }
 )
 

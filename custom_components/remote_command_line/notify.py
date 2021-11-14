@@ -9,11 +9,11 @@ from homeassistant.const import CONF_COMMAND, CONF_NAME
 import homeassistant.helpers.config_validation as cv
 from homeassistant.util.process import kill_subprocess
 
-from .const import BASE_SSH_SCHEMA, CONF_COMMAND_TIMEOUT, DEFAULT_TIMEOUT
+from .const import BASE_SSH_PLATFORM_SCHEMA, CONF_COMMAND_TIMEOUT, DEFAULT_TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORM_SCHEMA = BASE_SSH_SCHEMA.extend(
+PLATFORM_SCHEMA = BASE_SSH_PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_COMMAND): cv.string,
         vol.Optional(CONF_NAME): cv.string,

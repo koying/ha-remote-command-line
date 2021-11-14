@@ -1,8 +1,12 @@
 """The command_line component."""
+from __future__ import annotations
 
+import asyncio
 import logging
 import subprocess
-from homeassistant.const import CONF_COMMAND
+from homeassistant.const import CONF_COMMAND, CONF_NAME, CONF_TIMEOUT
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 
@@ -10,10 +14,20 @@ from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import template
 from datetime import datetime
 
-from .const import CONF_COMMAND_TIMEOUT, CONF_SSH_HOST, CONF_SSH_KEY, CONF_SSH_USER
+from .const import BASE_SSH_SCHEMA, CONF_COMMAND_TIMEOUT, CONF_SSH_HOST, CONF_SSH_KEY, CONF_SSH_USER, DEFAULT_TIMEOUT, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+SERVICE_SCHEMA = vol.Schema(BASE_SSH_SCHEMA).extend(
+    {
+        vol.Required(CONF_COMMAND): cv.template,
+        vol.Optional(CONF_COMMAND_TIMEOUT, default=DEFAULT_TIMEOUT): cv.positive_int,
+    }
+)
+
+CONFIG_SCHEMA = vol.Schema(
+    {DOMAIN: cv.schema_with_slug_keys(SERVICE_SCHEMA)}, extra=vol.ALLOW_EXTRA
+)
 
 def call_shell_with_returncode(command, timeout):
     """Run a shell command with a timeout.
@@ -69,9 +83,9 @@ class CommandData:
         if self.command and self.hass:
             self.command.hass = self.hass
         self.timeout = config.get(CONF_COMMAND_TIMEOUT)
-        self.user = config.get(CONF_SSH_USER)
-        self.host = config.get(CONF_SSH_HOST)
-        self.key = config.get(CONF_SSH_KEY)
+        self.ssh_user = config.get(CONF_SSH_USER)
+        self.ssh_host = config.get(CONF_SSH_HOST)
+        self.ssh_key = config.get(CONF_SSH_KEY)
 
     def update(self, with_value):
         """Get the latest data with a shell command."""
@@ -81,19 +95,19 @@ class CommandData:
             _LOGGER.exception("Error rendering command template: %s", ex)
             return None if with_value else -1
 
-        if (not self.user and not self.host and not self.key):
+        if (not self.ssh_user and not self.ssh_host and not self.ssh_key):
             ssh_command = command
         else:
             escaped_command = command.replace('"', '\\"').replace("'", "''")
             command_key = ""
             command_target = ""
-            command_user = self.user
-            if self.key:
-                command_key = f'-i {self.key}'
-            if self.host:
-                command_target = self.host
+            command_user = self.ssh_user
+            if self.ssh_key:
+                command_key = f'-i {self.ssh_key}'
+            if self.ssh_host:
+                command_target = self.ssh_host
             else:
-                    command_target = "172.17.0.1"
+                command_target = "172.17.0.1"
 
         ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
 
@@ -104,3 +118,47 @@ class CommandData:
             self.value = call_shell_with_returncode(ssh_command, self.timeout)
 
         return self.value
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up the remote_command_line component."""
+    dom_conf = config.get(DOMAIN, {})
+
+    async def async_service_handler(service: ServiceCall) -> None:
+        """Execute a shell command service."""
+        conf = dom_conf[service.service]
+        timeout = service.data[CONF_COMMAND_TIMEOUT] if CONF_COMMAND_TIMEOUT in service.data else conf[CONF_COMMAND_TIMEOUT]
+
+        try:
+            cmd: template.Template = conf[CONF_COMMAND]
+            if cmd and hass:
+                cmd.hass = hass
+            command = cmd.render()
+        except TemplateError as ex:
+            _LOGGER.exception("Error rendering command template: %s", ex)
+            return
+        ssh_user = conf.get(CONF_SSH_USER)
+        ssh_host = conf.get(CONF_SSH_HOST)
+        ssh_key = conf.get(CONF_SSH_KEY)
+        if (not ssh_user and not ssh_host and not ssh_key):
+            ssh_command = command
+        else:
+            escaped_command = command.replace('"', '\\"').replace("'", "''")
+            command_key = ""
+            command_target = ""
+            command_user = ssh_user
+            if ssh_key:
+                command_key = f'-i {ssh_key}'
+            if ssh_host:
+                command_target = ssh_host
+            else:
+                command_target = "172.17.0.1"
+
+        ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
+
+        _LOGGER.debug("Running command: %s", command)
+        ret = call_shell_with_value(ssh_command, timeout)
+        _LOGGER.debug("-- output: '%s'", ret)
+
+    for name in dom_conf:
+        hass.services.async_register(DOMAIN, name, async_service_handler)
+    return True

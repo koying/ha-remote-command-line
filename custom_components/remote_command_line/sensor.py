@@ -18,7 +18,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.reload import setup_reload_service
 
 from . import CommandData
-from .const import BASE_SSH_SCHEMA, CONF_COMMAND_TIMEOUT, CONF_POLLING, DEFAULT_TIMEOUT, DOMAIN, PLATFORMS
+from .const import BASE_SSH_PLATFORM_SCHEMA, CONF_COMMAND_TIMEOUT, CONF_POLLING, DEFAULT_TIMEOUT, DOMAIN, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ DEFAULT_NAME = "Command Sensor"
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
-PLATFORM_SCHEMA = BASE_SSH_SCHEMA.extend(
+PLATFORM_SCHEMA = BASE_SSH_PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_COMMAND): cv.template,
         vol.Optional(CONF_COMMAND_TIMEOUT, default=DEFAULT_TIMEOUT): cv.positive_int,
@@ -36,6 +36,7 @@ PLATFORM_SCHEMA = BASE_SSH_SCHEMA.extend(
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Optional(CONF_UNIT_OF_MEASUREMENT): cv.string,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+        vol.Optional(CONF_POLLING, default=True): cv.boolean,
     }
 )
 
