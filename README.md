@@ -10,6 +10,11 @@ Additionally, it implements the functionalities of the `shell_command` service, 
 
 ## Changelog
 
+### 0.2
+
+- FIX: do not force return value
+- FIX: Return error messages
+
 ### 0.1
 
 - Initial release
