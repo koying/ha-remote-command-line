@@ -57,10 +57,7 @@ def call_shell_with_value(command, timeout):
         return_value = subprocess.check_output(
             command, shell=True, timeout=timeout  # nosec # shell by design
         )
-        if return_value:
-            return return_value.strip().decode("utf-8")
-        else:
-            return datetime.now().isoformat()
+        return return_value.strip().decode("utf-8")
     except subprocess.CalledProcessError:
         _LOGGER.error("Command failed: %s", command)
     except subprocess.TimeoutExpired:
