@@ -2,6 +2,9 @@
 
 import logging
 import subprocess
+from homeassistant.const import CONF_COMMAND
+import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import template
@@ -74,16 +77,19 @@ class CommandData:
             _LOGGER.exception("Error rendering command template: %s", ex)
             return None if with_value else -1
 
-        escaped_command = command.replace('"', '\\"').replace("'", "''")
-        command_key = ""
-        command_target = ""
-        command_user = self.user
-        if self.key:
-            command_key = f'-i {self.key}'
-        if self.host:
-            command_target = self.host
+        if (not self.user and not self.host and not self.key):
+            ssh_command = command
         else:
-            command_target = "host.docker.internal"
+            escaped_command = command.replace('"', '\\"').replace("'", "''")
+            command_key = ""
+            command_target = ""
+            command_user = self.user
+            if self.key:
+                command_key = f'-i {self.key}'
+            if self.host:
+                command_target = self.host
+            else:
+                    command_target = "172.17.0.1"
 
         ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
 

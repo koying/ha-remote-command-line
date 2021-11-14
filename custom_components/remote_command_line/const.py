@@ -7,7 +7,7 @@ import homeassistant.helpers.config_validation as cv
 
 CONF_COMMAND_TIMEOUT = "command_timeout"
 DEFAULT_TIMEOUT = 15
-DOMAIN = "command_line"
+DOMAIN = "remote_command_line"
 PLATFORMS = ["binary_sensor", "cover", "sensor", "switch"]
 
 CONF_SSH_USER = "ssh_user"
@@ -20,6 +20,6 @@ BASE_SSH_SCHEMA = PLATFORM_SCHEMA.extend(
         voluptuous.Required(CONF_SSH_USER): cv.string,
         voluptuous.Optional(CONF_SSH_HOST): cv.string,
         voluptuous.Optional(CONF_SSH_KEY): cv.string,
-        voluptuous.Optional(CONF_POLLING): cv.boolean,
+        voluptuous.Optional(CONF_POLLING, True): cv.boolean,
     }
 )
