@@ -109,7 +109,7 @@ class CommandData:
             else:
                 command_target = "172.17.0.1"
 
-        ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
+            ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
 
         _LOGGER.debug("Running command: %s", command)
         if with_value:
@@ -153,7 +153,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             else:
                 command_target = "172.17.0.1"
 
-        ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
+            ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
 
         _LOGGER.debug("Running command: %s", command)
         ret = call_shell_with_value(ssh_command, timeout)

@@ -16,7 +16,7 @@ CONF_SSH_KEY = "ssh_key"
 CONF_POLLING = "polling"
 
 BASE_SSH_SCHEMA = {
-        vol.Required(CONF_SSH_USER): cv.string,
+        vol.Optional(CONF_SSH_USER): cv.string,
         vol.Optional(CONF_SSH_HOST): cv.string,
         vol.Optional(CONF_SSH_KEY): cv.string,
     }
