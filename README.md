@@ -1,4 +1,4 @@
-# Remote command_line integration for Home Assistant
+# Remote command-line integration for Home Assistant
 
 This is an "extension" of the builtin [`command_line`](https://www.home-assistant.io/integrations/sensor.command_line/) integration.  
 Besides the functionalities of the hereabove, it also:
