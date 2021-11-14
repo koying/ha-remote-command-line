@@ -27,22 +27,23 @@ Besides the functionalities of the hereabove, it also:
 
 The integration is configured via YAML only.
 
-Example:
+Examples:
 
 ```yaml
-mqtt_discoverystream:
-  base_topic: test_HA
-  publish_attributes: false
-  publish_timestamps: true
-  publish_discovery: true
-  include:
-    entities:
-      - sensor.owm_hourly_humidity
-      - sensor.jellyfin_cloud
-      - light.wled_esp
-  exclude:
-    entities:
-      - sensor.plug_xiaomi_1_electrical_measurement
+- platform: remote_command_line
+  name: HA image version
+  scan_interval:
+    days: 1
+  ssh_user: user
+  command: >
+    IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker image inspect ${IMAGE} | jq -r '.[0].ContainerConfig.Labels["io.hass.version"]'
+- platform: remote_command_line
+  name: Fetch HA Image
+  ssh_user: user
+  command_timeout: 900
+  polling: false
+  command: >
+    IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker pull -q ${IMAGE} > /dev/null
 ```
 
 ## Configuration
@@ -60,6 +61,8 @@ The base options are the same as the command_line one. The additional options ar
 | ssh_key  | no      | no       | Private key file used in SSH connections                                                     |
 
 **NOTE:** If none of the ssh_* options is specified, the component do a local execution like `command_line`.
+
+**NOTE 2:** If a command doesn't produce any text, the current date/time is used as the state.
 
 ## Credits
 

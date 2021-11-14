@@ -54,6 +54,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     json_attributes = config.get(CONF_JSON_ATTRIBUTES)
     polling = config.get(CONF_POLLING)
     data = CommandData(hass, config, command)
+    _LOGGER.info("polling: " + ("yes" if polling else "no"))
 
     add_entities(
         [CommandSensor(hass, data, name, unit, value_template, json_attributes, polling)], polling
@@ -79,7 +80,7 @@ class CommandSensor(SensorEntity):
 
     def update(self):
         """Get the latest data and updates the state."""
-        value = self.data.update(True)
+        value = self.data.update(with_value=True)
 
         if self._json_attributes:
             self._attr_extra_state_attributes = {}

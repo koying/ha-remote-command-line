@@ -133,8 +133,8 @@ class CommandSwitch(SwitchEntity):
     def _query_state(self):
         """Query for state."""
         if self._value_template:
-            return self._command_state.update(True)
-        return self._command_state.update(False) == 0
+            return self._command_state.update(with_value=True)
+        return self._command_state.update(with_value=False) == 0
 
     def update(self):
         """Update device state."""

@@ -91,7 +91,7 @@ class CommandBinarySensor(BinarySensorEntity):
 
     def update(self):
         """Get the latest data and updates the state."""
-        self.data.update(True)
+        self.data.update(with_value=True)
         value = self.data.value
 
         if self._value_template is not None:

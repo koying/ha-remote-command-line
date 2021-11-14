@@ -135,7 +135,7 @@ class CommandCover(CoverEntity):
     def update(self):
         """Update device state."""
         if self._command_state:
-            payload = str(self._command_state.update(True))
+            payload = str(self._command_state.update(with_value=True))
             if self._value_template:
                 payload = self._value_template.render_with_possible_json_value(payload)
             self._state = int(payload)

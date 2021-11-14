@@ -20,6 +20,6 @@ BASE_SSH_SCHEMA = PLATFORM_SCHEMA.extend(
         voluptuous.Required(CONF_SSH_USER): cv.string,
         voluptuous.Optional(CONF_SSH_HOST): cv.string,
         voluptuous.Optional(CONF_SSH_KEY): cv.string,
-        voluptuous.Optional(CONF_POLLING, True): cv.boolean,
+        voluptuous.Optional(CONF_POLLING, default=True): cv.boolean,
     }
 )
