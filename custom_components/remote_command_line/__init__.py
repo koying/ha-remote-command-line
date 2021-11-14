@@ -60,10 +60,13 @@ def call_shell_with_value(command, timeout):
         return return_value.strip().decode("utf-8")
     except subprocess.CalledProcessError:
         _LOGGER.error("Command failed: %s", command)
+        return "Error: Command failed"
     except subprocess.TimeoutExpired:
         _LOGGER.error("Timeout for command: %s", command)
+        return "Error: Timeout for command"
     except subprocess.SubprocessError:
         _LOGGER.error("Error trying to exec command: %s", command)
+        return "Error trying to exec command"
 
     return None
 
