@@ -3,7 +3,7 @@
 This is an "extension" of the builtin [`command_line`](https://www.home-assistant.io/integrations/sensor.command_line/) integration.  
 Besides the functionalities of the hereabove, it also:
 
-- allow to disable polling altogether, relying on `homeassistant.update_entity` to trigger updates od the sensors
+- allow to disable polling altogether, relying on `homeassistant.update_entity` to trigger updates of the sensors
 - helps for remote connections via SSH
 
 Additionally, it implements the functionalities of the `shell_command` service, with the added capability to specify a timeout value.

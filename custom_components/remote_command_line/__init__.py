@@ -142,7 +142,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         if (not ssh_user and not ssh_host and not ssh_key):
             ssh_command = command
         else:
-            escaped_command = command.replace('"', '\\"').replace("'", "''")
+            escaped_command = command.replace("'", "''")
             command_key = ""
             command_target = ""
             command_user = ssh_user
