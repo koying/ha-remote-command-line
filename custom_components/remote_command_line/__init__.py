@@ -98,7 +98,7 @@ class CommandData:
         if (not self.ssh_user and not self.ssh_host and not self.ssh_key):
             ssh_command = command
         else:
-            escaped_command = command.replace('"', '\\"').replace("'", "''")
+            escaped_command = command.replace("'", "''")
             command_key = ""
             command_target = ""
             command_user = self.ssh_user
