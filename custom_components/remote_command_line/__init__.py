@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import subprocess
 from homeassistant.const import CONF_COMMAND, CONF_NAME, CONF_TIMEOUT
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.typing import ConfigType
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
+from pathlib import Path
 
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import template
@@ -98,6 +100,11 @@ class CommandData:
         if (not self.ssh_user and not self.ssh_host and not self.ssh_key):
             ssh_command = command
         else:
+            if not self.ssh_key:
+                home = str(Path.home())
+                if not os.path.isfile("/config/.ssh/id_rsa") and not os.path.isfile(home + "/.ssh/id_rsa"):
+                    call_shell_with_value("mkdir /config/.ssh && ssh-keygen -q -b 2048 -t rsa -N '' -f /config/.ssh/id_rsa", 30)
+                self.ssh_key = "/config/.ssh/id_rsa"    
             escaped_command = command.replace("'", "''")
             command_key = ""
             command_target = ""
@@ -142,6 +149,11 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         if (not ssh_user and not ssh_host and not ssh_key):
             ssh_command = command
         else:
+            if not ssh_key:
+                home = str(Path.home())
+                if not os.path.isfile("/config/.ssh/id_rsa") and not os.path.isfile(home + "/.ssh/id_rsa"):
+                    call_shell_with_value("mkdir /config/.ssh && ssh-keygen -q -b 2048 -t rsa -N '' -f /config/.ssh/id_rsa", 30)
+                ssh_key = "/config/.ssh/id_rsa"    
             escaped_command = command.replace("'", "''")
             command_key = ""
             command_target = ""
