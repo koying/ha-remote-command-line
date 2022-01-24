@@ -10,6 +10,11 @@ Additionally, it implements the functionalities of the `shell_command` service, 
 
 ## Changelog
 
+### 0.4
+
+- ADD: create keypair if not specified and not found
+- FIX: do not escape double quotes
+
 ### 0.3
 
 - FIX: local execution
