@@ -10,6 +10,10 @@ Additionally, it implements the functionalities of the `shell_command` service, 
 
 ## Changelog
 
+### 0.5
+
+- FIX: execute service async
+
 ### 0.4
 
 - ADD: create keypair if not specified and not found
