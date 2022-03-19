@@ -1,39 +1,13 @@
 # Remote command-line integration for Home Assistant
 
-This is an "extension" of the builtin [`command_line`](https://www.home-assistant.io/integrations/sensor.command_line/) integration.  
-Besides the functionalities of the hereabove, it also:
+This component brings together the builtin [`command_line`](https://www.home-assistant.io/integrations/sensor.command_line/) and [`shell command`](https://www.home-assistant.io/integrations/shell_command//) integrations.  
+Besides the functionalities of the hereabove, it adds the following capabilities:
 
 - allow to disable polling altogether, relying on `homeassistant.update_entity` to trigger updates of the sensors
-- helps for remote connections via SSH
-
-Additionally, it implements the functionalities of the `shell_command` service, with the added capability to specify a timeout value.
-
-## Changelog
-
-### 0.5
-
-- FIX: execute service async
-
-### 0.4
-
-- ADD: create keypair if not specified and not found
-- FIX: do not escape double quotes
-
-### 0.3
-
-- FIX: local execution
-
-### 0.2
-
-- FIX: do not force return value
-- FIX: Return error messages
-
-### 0.1
-
-- Initial release
+- helper for remote connections via SSH
+- adds a `timeout` parameter to the service
 
 ## Installation
-
 ### HACS
 
 1. Launch HACS
@@ -49,23 +23,23 @@ Additionally, it implements the functionalities of the `shell_command` service, 
 
 The integration is configured via YAML only.
 
-Examples:
+Example of sensor:
 
 ```yaml
-- platform: remote_command_line
-  name: HA image version
-  scan_interval:
-    days: 1
-  ssh_user: user
-  command: >
-    IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker image inspect ${IMAGE} | jq -r '.[0].ContainerConfig.Labels["io.hass.version"]'
-- platform: remote_command_line
-  name: Fetch HA Image
-  ssh_user: user
-  command_timeout: 900
-  polling: false
-  command: >
-    IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker pull -q ${IMAGE} > /dev/null
+sensor:
+  - platform: remote_command_line
+    name: HA running version
+    scan_interval:
+      hours: 6
+    command: >
+      cat /config/.HA_VERSION
+  - platform: remote_command_line
+    name: HA image version
+    scan_interval:
+      days: 1
+    ssh_user: user
+    command: >
+      IMAGE=`docker inspect home-assistant | jq -r '.[0].Config.Image'`; docker image inspect ${IMAGE} | jq -r '.[0].ContainerConfig.Labels["io.hass.version"]'
 ```
 
 Example of service:
@@ -86,17 +60,15 @@ remote_command_line:
 This integration can only be configuration via YAML.
 The base options are the same as the command_line one. The additional options are:
 
-| key      | default | required | description                                                                                  |
-| -------- | ------- | -------- | -------------------------------------------------------------------------------------------- |
-| polling  | true    | no       | Enable polling with `scan_interval` interval                                                 |
-| ssh_user | no      | no       | User used when doing remote SSH connection                                                   |
-| ssh_host | no      | no       | Host to SSH to. If not specified, defaults to `172.17.0.1`, which is usually the docker host |
-| ssh_key  | no      | no       | Private key file used in SSH connections                                                     |
+| key      | default                | required | description                                                                                    |
+| -------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------- |
+| polling  | true                   | no       | Enable polling with `scan_interval` interval                                                   |
+| ssh_user | no                     | no       | User used when doing remote SSH connection                                                     |
+| ssh_host | `host.docker.internal` | no       | Host to SSH to. If not specified, defaults to the docker host                                  |
+| ssh_key  | `/config/.ssh/id_rsa`  | no       | Private key file used in SSH connections                                                       |
 
 **NOTE:** If none of the ssh_* options is specified, the component do a local execution like `command_line`.
 
+**NOTE 2:** If `ssh_user` or `ssh_host` is specified, but not `ssh_key`, and `/config/.ssh/id_rsa` does not exist, an SSH keypair will be automatically created in `/config/.ssh`.
+
 **NOTE 2:** If a command doesn't produce any text, the current date/time is used as the state.
-
-## Credits
-
-- This custom component is based upon the `command_line` one from HA Core.  
