@@ -128,7 +128,7 @@ class CommandData:
             if self.ssh_host:
                 command_target = self.ssh_host
             else:
-                command_target = "host.docker.internal"
+                command_target = "172.17.0.1"
 
             ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
 
@@ -188,7 +188,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             if ssh_host:
                 command_target = ssh_host
             else:
-                command_target = "host.docker.internal"
+                command_target = "172.17.0.1"
 
             ssh_command = f"ssh -4 -o ConnectTimeout=3 -o StrictHostKeyChecking=no {command_key} {command_user}@{command_target} '{escaped_command}'"
 
