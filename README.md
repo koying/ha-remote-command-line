@@ -64,7 +64,7 @@ The base options are the same as the command_line one. The additional options ar
 | -------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------- |
 | polling  | true                   | no       | Enable polling with `scan_interval` interval                                                   |
 | ssh_user | no                     | no       | User used when doing remote SSH connection                                                     |
-| ssh_host | `host.docker.internal` | no       | Host to SSH to. If not specified, defaults to the docker host                                  |
+| ssh_host | `172.17.0.1`           | no       | Host to SSH to. If not specified, defaults to the docker host                                  |
 | ssh_key  | `/config/.ssh/id_rsa`  | no       | Private key file used in SSH connections                                                       |
 
 **NOTE:** If none of the ssh_* options is specified, the component do a local execution like `command_line`.
